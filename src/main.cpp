@@ -11,6 +11,7 @@
 #include <exception>
 
 #include "../include/graph.h"
+#include "../include/sparse_matrix.h"
 #include "../include/util.h"
 
 void Usage(char *prog) {
@@ -48,13 +49,15 @@ int main(int argc, char **argv) {
         }
     }
 
-    Graph *graph = new Graph();
+    Graph* graph = new Graph();
     try {
         graph->ReadFromFile(filename, filefmt);
     } catch (std::exception &e) {
         std::cout << "\x1b[31merror\x1b[0m: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
-    
+
+    SparseMatrix<double>* edges = graph->Edges();
+
     return EXIT_SUCCESS;
 }

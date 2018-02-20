@@ -59,7 +59,7 @@ void Graph::ReadFromFile(const std::string &filename, const std::string &format)
 
         // Temporary containers.
         std::vector<double>* new_nodes = new std::vector<double>(n_nodes, 0.0);
-        SparseMatrix<double>* new_edges = new SparseMatrix<double>(n_nodes);
+        SparseMatrix<double>* new_edges = new SparseMatrix<double>(n_nodes, n_nodes);
 
         // Scan the file again and construct the graph.
         for (int i = 1; std::getline(f, line); ++i) {

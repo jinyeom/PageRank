@@ -1,12 +1,12 @@
 # Makefile for PageRank
 CC=g++
-CFLAGS=-std=c++11
-SOURCES=./src/main.cpp ./src/sparse_matrix.cpp ./src/graph.cpp ./src/util.cpp
+CFLAGS=-std=c++11 -I ./include
+SOURCES=./src/main.cpp ./src/graph.cpp ./src/util.cpp
 EXECUTABLE=pagerank
 
 all: $(EXECUTABLE)
 
-$(EXECUTABLE): 
+$(EXECUTABLE):
 	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) -o $@
 
 clean:
