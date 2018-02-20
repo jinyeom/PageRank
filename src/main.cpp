@@ -58,6 +58,16 @@ int main(int argc, char **argv) {
     }
 
     SparseMatrix<double>* edges = graph->Edges();
+    std::vector<Entry<double>*> a = edges->A();
+
+    std::vector<double> nonzeros;
+    for (std::vector<Entry<double>*>::const_iterator it = a.begin(); it != a.end(); ++it) {
+        nonzeros.push_back((*it)->V());
+    }
+
+    PrintVector<double>(nonzeros);
+    PrintVector<int>(edges->IA());
+    PrintVector<int>(edges->JA());
 
     return EXIT_SUCCESS;
 }

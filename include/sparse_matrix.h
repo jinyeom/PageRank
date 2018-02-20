@@ -54,15 +54,22 @@ public:
     // Set an element at (i, j) with v.
     void Set(int i, int j, T v) {
         int pos = ia_[i];
+        int col = 0;
         while (pos < ia_[i + 1] && ja_[pos] != j) {
+            col = ja_[pos];
             pos++;
         }
-        if (ja_[pos] != j) {
+        if (col != j) {
             // If the argument position is empty, insert a new entry.
             // Same as in Get(), if the correct column is found, there is
-            // a nonzero entry.
-            a_.insert(a_.begin() + pos, new Entry<T>(i, j, v));
-            ja_.insert(ja_.begin() + pos, j);
+            // a nonzero entry.            
+            if (a_.empty()) {
+                a_.push_back(new Entry<T>(i, j, v));
+                ja_.push_back(j);
+            } else {
+                a_.insert(a_.begin() + pos, new Entry<T>(i, j, v));
+                ja_.insert(ja_.begin() + pos, j);
+            }
             for (int r = i + 1; r <= m_; ++r) {
                 ia_[r] += 1;
             }

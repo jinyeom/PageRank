@@ -7,14 +7,10 @@
 #include "../include/sparse_matrix.h"
 #include "../include/util.h"
 
-Graph::Graph() {}
-Graph::~Graph() { delete nodes_; delete edges_; }
-
 // Clear the graph to its default state.
 void Graph::Clear() {
     n_nodes_ = 0;
     n_edges_ = 0;
-    nodes_->clear();
     delete nodes_;
     delete edges_;
 }
@@ -27,13 +23,15 @@ void Graph::ReadFromFile(const std::string &filename, const std::string &format)
     char err_buf[64];
 
     if (format.compare("DIMACS") == 0) {
-        f.open(filename, std::ifstream::in);
-        // Scan through the file and look for the problem line.
         int n_nodes;
         int n_edges;
         bool problem_read = false;
+
+        // Scan through the file and look for the problem line.  
+        f.open(filename, std::ifstream::in);              
         for (int i = 1; std::getline(f, line) && !problem_read; ++i) {
-            if (tokens[0].compare("p") == 0) {
+            Split(line, " ", tokens);
+            if (tokens[0].compare("p") == 0) {    
                 // problem line
                 if (problem_read) {
                     sprintf(err_buf, "%s:%d: miltiple problem lines found", filename.c_str(), i);
@@ -51,6 +49,7 @@ void Graph::ReadFromFile(const std::string &filename, const std::string &format)
                 sprintf(err_buf, "%s:%d: edge read before the problem", filename.c_str(), i);
                 throw std::logic_error(err_buf);
             }
+            tokens.clear(); 
         }
         if (!problem_read) {
             sprintf(err_buf, "%s: missing the problem line", filename.c_str());
@@ -62,10 +61,14 @@ void Graph::ReadFromFile(const std::string &filename, const std::string &format)
         SparseMatrix<double>* new_edges = new SparseMatrix<double>(n_nodes, n_nodes);
 
         // Scan the file again and construct the graph.
+        f.clear();
+        f.seekg(0, std::ios::beg);
         for (int i = 1; std::getline(f, line); ++i) {
             Split(line, " ", tokens);
             if (tokens[0].compare("c") == 0) {
                 // comment; do nothing
+            } else if (tokens[0].compare("p") == 0) {
+                // problem line; do nothing
             } else if (tokens[0].compare("a") == 0) {
                 // edge descriptor
                 if (tokens.size() != 4) {
@@ -74,7 +77,7 @@ void Graph::ReadFromFile(const std::string &filename, const std::string &format)
                 }
                 int src = std::stoi(tokens[1]) - 1;
                 int dst = std::stoi(tokens[2]) - 1;
-                double weight = std::stod(tokens[3]);
+                double weight = std::stod(tokens[3]);                
                 new_edges->Set(src, dst, weight);
             } else {
                 sprintf(err_buf, "%s:%d: line starts with unknown token", filename.c_str(), i);
@@ -85,6 +88,7 @@ void Graph::ReadFromFile(const std::string &filename, const std::string &format)
         f.close();
 
         // No error; copy over to the graph object.
+        Clear();
         n_nodes_ = n_nodes;
         n_edges_ = n_edges;
         nodes_ = new_nodes;

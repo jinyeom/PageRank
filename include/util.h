@@ -5,7 +5,14 @@
 #include <vector>
 
 // Print the argument vector.
-template<typename T> void PrintVector(const std::vector<T> &v);
+template<typename T>
+void PrintVector(const std::vector<T> &v) {
+    std::cout << "[ ";
+    for (typename std::vector<T>::const_iterator it = v.begin(); it != v.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << "]" << std::endl;
+}
 
 // Split the argument string, tokenize it with the argument deliminator, and
 // store its tokens in the argument vector.

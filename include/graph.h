@@ -10,9 +10,6 @@
 // Graph represented with a node vector and an edge matrix.
 class Graph {
 public:
-    Graph();
-    ~Graph();
-
     int NumNodes() const { return n_nodes_; }
     int NumEdges() const { return n_edges_; }
     std::vector<double>* Nodes() const { return nodes_; }
