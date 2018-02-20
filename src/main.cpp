@@ -55,14 +55,6 @@ int main(int argc, char **argv) {
         std::cout << "\x1b[31merror\x1b[0m: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
-
-    std::vector<double> weights = graph->A();
-    std::vector<int> rows = graph->IA();
-    std::vector<int> cols = graph->JA();
-
-    PrintVector(weights);
-    PrintVector(rows);
-    PrintVector(cols);
-
+    
     return EXIT_SUCCESS;
 }

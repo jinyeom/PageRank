@@ -1,11 +1,23 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
-
 #include <string>
 
 #include "../include/graph.h"
+#include "../include/sparse_matrix.h"
 #include "../include/util.h"
+
+Graph::Graph() {}
+Graph::~Graph() { delete nodes_; delete edges_; }
+
+// Clear the graph to its default state.
+void Graph::Clear() {
+    n_nodes_ = 0;
+    n_edges_ = 0;
+    nodes_->clear();
+    delete nodes_;
+    delete edges_;
+}
 
 // Read and store a graph from a file specified by the argument file name and its format.
 void Graph::ReadFromFile(const std::string &filename, const std::string &format) {
@@ -17,6 +29,8 @@ void Graph::ReadFromFile(const std::string &filename, const std::string &format)
     if (format.compare("DIMACS") == 0) {
         f.open(filename, std::ifstream::in);
         // Scan through the file and look for the problem line.
+        int n_nodes;
+        int n_edges;
         bool problem_read = false;
         for (int i = 1; std::getline(f, line) && !problem_read; ++i) {
             if (tokens[0].compare("p") == 0) {
@@ -29,8 +43,8 @@ void Graph::ReadFromFile(const std::string &filename, const std::string &format)
                     sprintf(err_buf, "%s:%d: invalid number of tokens", filename.c_str(), i);
                     throw std::length_error(err_buf);
                 }
-                n_nodes_ = std::stoi(tokens[2]);
-                n_edges_ = std::stoi(tokens[3]);
+                n_nodes = std::stoi(tokens[2]);
+                n_edges = std::stoi(tokens[3]);
                 problem_read = true;
             } else if (tokens[0].compare("a") == 0) {
                 // edge descriptor; shouldn't appear before finding a problem line
@@ -42,10 +56,10 @@ void Graph::ReadFromFile(const std::string &filename, const std::string &format)
             sprintf(err_buf, "%s: missing the problem line", filename.c_str());
             throw std::runtime_error(err_buf);
         }
-        // Start building the sparse matrix using the problem line in the file.
 
-        std::vector<int> tmp_ia(n_nodes_ + 1, 0);    // temporary container for IA
-
+        // Temporary containers.
+        std::vector<double>* new_nodes = new std::vector<double>(n_nodes, 0.0);
+        SparseMatrix<double>* new_edges = new SparseMatrix<double>(n_nodes);
 
         // Scan the file again and construct the graph.
         for (int i = 1; std::getline(f, line); ++i) {
@@ -58,10 +72,10 @@ void Graph::ReadFromFile(const std::string &filename, const std::string &format)
                     sprintf(err_buf, "%s:%d: invalid number of tokens", filename.c_str(), i);
                     throw std::length_error(err_buf);
                 }
-                // DIMACS already uses 1 based indexing; since IA's first element
-                // is a placeholder, this token can be used directly.
-                tmp_ia[std::stoi(tokens[1])]++;
-
+                int src = std::stoi(tokens[1]) - 1;
+                int dst = std::stoi(tokens[2]) - 1;
+                double weight = std::stod(tokens[3]);
+                new_edges->Set(src, dst, weight);
             } else {
                 sprintf(err_buf, "%s:%d: line starts with unknown token", filename.c_str(), i);
                 throw std::invalid_argument(err_buf);
@@ -70,8 +84,11 @@ void Graph::ReadFromFile(const std::string &filename, const std::string &format)
         }
         f.close();
 
-        nodes_ = std::vector<double>(n_nodes_, 0.0);     
-
+        // No error; copy over to the graph object.
+        n_nodes_ = n_nodes;
+        n_edges_ = n_edges;
+        nodes_ = new_nodes;
+        edges_ = new_edges;
     } else {
         // Handle invalid file formats.
         sprintf(err_buf, "%s: invalid file format `%s`", filename.c_str(), format.c_str());

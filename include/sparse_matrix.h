@@ -6,32 +6,28 @@
 // Sparse matrix entry.
 template <typename T>
 class Entry {
-private:
-    bool empty_;    // indicates whether the entry is empty
-    T v_;           // value of the entry
-
 public:
-    Entry();    // empty entry
-    Entry(T v); // nonempty entry
+    Entry(int i, int j);        // empty entry
+    Entry(int i, int j, T v);   // nonempty entry
 
-    bool IsEmpty() const { return empty_; }
+    int I() const { return i_; }
+    int J() const { return i_; }
     T V() const { return v_; }
+    bool IsEmpty() const { return is_empty_; }
 
-    void SetEmpty(); { empty_ = true; v_ = T(); }
-    void SetV(T v); { empty_ = false; v_ = v; }
+    void SetEmpty() { is_empty_ = true; v_ = T(); }
+    void SetV(T v) { is_empty_ = false; v_ = v; }
+
+private:
+    int i_;         // row index
+    int j_;         // column index
+    T v_;           // entry value
+    bool is_empty_; // true if the entry is empty
 };
 
 // Sparse matrix with CSR (Compressed Sparse Row) format.
 template <typename T>
 class SparseMatrix {
-private:
-    int m_; // number of rows
-    int n_; // number of columns
-
-    std::vector<Entry<T>*> a_;  // nonzero entries
-    std::vector<int> ia_;       // indices in JA for each row
-    std::vector<int> ja_;       // column indices of elements in A
-
 public:
     SparseMatrix(int n);
     SparseMatrix(int m, int n);
@@ -44,8 +40,17 @@ public:
 
     // Get an element at (i, j).
     Entry<T>* Get(int i, int j) const;
+
     // Set an element at (i, j) with v.
     void Set(int i, int j, T v);
+
+private:
+    int m_; // number of rows
+    int n_; // number of columns
+
+    std::vector<Entry<T>*> a_;  // nonzero entries
+    std::vector<int> ia_;       // indices in JA for each row
+    std::vector<int> ja_;       // column indices of elements in A
 };
 
 #endif
