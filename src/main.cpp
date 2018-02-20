@@ -13,7 +13,7 @@
 #include "../include/graph.h"
 #include "../include/util.h"
 
-void usage(char *prog) {
+void Usage(char *prog) {
     std::cout << "Usage: " << prog
               << " --filename FILENAME"
               << " --fmt FORMAT"
@@ -23,7 +23,7 @@ void usage(char *prog) {
 
 int main(int argc, char **argv) {
     if (argc != 7) {
-        usage(argv[0]);
+        Usage(argv[0]);
         return EXIT_FAILURE;
     }
     
@@ -39,11 +39,11 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "--style") == 0) {
             style = argv[++i];
             if (style.compare("pull") != 0 && style.compare("push") != 0) {
-                usage(argv[0]);
+                Usage(argv[0]);
                 return EXIT_FAILURE;
             }
         } else {
-            usage(argv[0]);
+            Usage(argv[0]);
             return EXIT_FAILURE;
         }
     }
@@ -57,8 +57,8 @@ int main(int argc, char **argv) {
     }
 
     std::vector<double> weights = graph->A();
-    std::vector<unsigned long> rows = graph->IA();
-    std::vector<unsigned long> cols = graph->JA();
+    std::vector<int> rows = graph->IA();
+    std::vector<int> cols = graph->JA();
 
     PrintVector(weights);
     PrintVector(rows);

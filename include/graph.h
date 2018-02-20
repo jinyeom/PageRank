@@ -5,22 +5,20 @@
 #include <vector>
 #include <string>
 
+#include "sparse_matrix.h"
+
 // Graph represented as a sparse matrix in CSR (Compressed Sparse Row) format. 
 class Graph {
 private:
-    unsigned long n_nodes_;         // number of nodes
-    unsigned long n_edges_;         // number of edges
-    std::vector<double> a_;         // edge weights (elements in the sparse matrix)
-    std::vector<unsigned long> ia_; // source nodes (row indices of the elements)
-    std::vector<unsigned long> ja_; // destination nodes (column indices of the elements)
-
+    int n_nodes_;               // number of nodes
+    int n_edges_;               // number of edges
+    std::vector<double> nodes_; // node values
+    SparseMatrix *edges_;       // edge values
+    
 public:
     Graph();
 
-    std::vector<double> A() const { return a_; }
-    std::vector<unsigned long> IA() const { return ia_; }
-    std::vector<unsigned long> JA() const { return ja_; }
-
+    // Read and store a graph from a file specified by the argument file name and its format.
     void ReadFromFile(const std::string& filename, const std::string& format);
 };
 
