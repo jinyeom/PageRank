@@ -64,11 +64,8 @@ int main(int argc, char **argv) {
 
     PageRank* pr = new PageRank();
     try {
-        std::cout << "Initializing PageRank...";
         pr->InitGraph(filename, filefmt);
-        std::cout << "\x1b[32mdone\x1b[0m" << std::endl;
     } catch (std::exception &e) {
-        std::cout << "\x1b[31mFAILED\x1b[0m" << std::endl;
         std::cout << "\x1b[31merror\x1b[0m: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
@@ -91,15 +88,12 @@ int main(int argc, char **argv) {
     // Clean up the final ranks to sum up to 1.0.
     std::vector<double>* ranks = pr->PageRanks();
     double sum = 0.0;
-    for (std::vector<double>::const_iterator it = (*ranks).begin(); it < (*ranks).end(); ++it) {
+    for (std::vector<double>::iterator it = (*ranks).begin(); it < (*ranks).end(); ++it) {
         sum += *it;
     }
-    for (std::vector<double>::iterator it = (*ranks).begin(); it < (*ranks).end(); ++it) {
-        *it = *it / sum;
+    std::cout << "======== Ranks ========" << std::endl;    
+    for (size_t i = 0; i < ranks->size(); ++i) {
+        std::cout << i << ": " << ranks->at(i) / sum << std::endl;
     }
-
-    std::cout << "Result:" << std::endl;
-    PrintVector(*ranks);
-
     return EXIT_SUCCESS;
 }
