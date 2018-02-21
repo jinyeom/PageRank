@@ -119,8 +119,8 @@ int main(int argc, char **argv) {
     std::vector<double> r1 = (*pr.*update)(d);
     std::vector<double> r2 = (*pr.*update)(d);
     while (Progress(r1, r2, THRESHOLD)) {
-        r1 = pr->PullUpdate(d);
-        r2 = pr->PullUpdate(d);
+        r1 = (*pr.*update)(d);
+        r2 = (*pr.*update)(d);
     }
 
     // Clean up the final ranks to sum up to 1.0.
