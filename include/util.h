@@ -18,4 +18,7 @@ void PrintVector(const std::vector<T> &v) {
 // store its tokens in the argument vector.
 void Split(const std::string &s, const char* delim, std::vector<std::string>& v);
 
+// Return true if there is still progress.
+bool Progress(std::vector<double> v1, std::vector<double> v2, double thresh);
+
 #endif

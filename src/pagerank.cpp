@@ -1,0 +1,64 @@
+#include "../include/pagerank.h"
+#include "../include/sparse_matrix.h"
+
+// Initialize the graph from a file, and assign the initial value to each node.
+void PageRank::InitGraph(const std::string& filename, const std::string& filefmt) {
+    graph_ = new Graph();
+    graph_t_ = new Graph();
+
+    // Read both the graph and its tranpose graph.
+    graph_->ReadFromFile(filename, filefmt, false);    
+    graph_t_->ReadFromFile(filename, filefmt, true);
+
+    // Set each node value to 1 / N.
+    int n = graph_->NumNodes();
+    for (int i = 0; i < n; ++i) {
+        graph_->SetNode(i, 1.0 / (double)n);
+    }
+}
+
+// Update the graph using the pull style algorithm.
+std::vector<double> PageRank::PullUpdate(double d) {
+    if (d < 0.0 || d > 1.0) {
+        throw std::invalid_argument("d must be between 0 and 1");
+    }
+    int n = graph_->NumNodes();
+    std::vector<double> next(n);
+    for (int i = 0; i < n; ++i) {
+        // Outgoing edges of transpose graph are incoming edges of the original graph.
+        double next_pr = (1.0 - d) / (double)n;
+        std::vector<Entry<double>*> incoming = graph_t_->OutEdges(i);
+        for (std::vector<Entry<double>*>::const_iterator it = incoming.begin(); it < incoming.end(); ++it) {
+            int src = (*it)->J(); // source is the destination of the transpose graph
+            int out_degree = graph_->OutEdges(src).size();
+            next_pr += d * (graph_->Node(src) / (double)out_degree);
+        }
+        next.at(i) = next_pr;
+    }
+    graph_->SetNodes(next);
+    graph_t_->SetNodes(next);
+    return next;
+}
+
+// Update the graph using the push style algorithm.
+std::vector<double> PageRank::PushUpdate(double d) {
+    if (d < 0.0 || d > 1.0) {
+        throw std::invalid_argument("d must be between 0 and 1");
+    }
+    int n = graph_->NumNodes();
+    std::vector<double> next(n);
+    for (int i = 0; i < n; ++i) {
+        // Outgoing edges of transpose graph are incoming edges of the original graph.
+        double next_pr = (1.0 - d) / (double)n;
+        std::vector<Entry<double>*> incoming = graph_t_->OutEdges(i);
+        for (std::vector<Entry<double>*>::const_iterator it = incoming.begin(); it < incoming.end(); ++it) {
+            int src = (*it)->J(); // source is the destination of the transpose graph
+            int out_degree = graph_->OutEdges(src).size();
+            next_pr += d * (graph_->Node(src) / (double)out_degree);
+        }
+        next.at(i) = next_pr;
+    }
+    graph_->SetNodes(next);
+    graph_t_->SetNodes(next);
+    return next;
+}

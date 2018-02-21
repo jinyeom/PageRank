@@ -16,7 +16,7 @@ void Graph::Clear() {
 }
 
 // Read and store a graph from a file specified by the argument file name and its format.
-void Graph::ReadFromFile(const std::string &filename, const std::string &format) {
+void Graph::ReadFromFile(const std::string &filename, const std::string &format, bool transpose) {
     std::ifstream f;
     std::string line;
     std::vector<std::string> tokens;
@@ -77,6 +77,10 @@ void Graph::ReadFromFile(const std::string &filename, const std::string &format)
                 }
                 int src = std::stoi(tokens[1]) - 1;
                 int dst = std::stoi(tokens[2]) - 1;
+                if (transpose) {
+                    src = std::stoi(tokens[2]) - 1;
+                    dst = std::stoi(tokens[1]) - 1;
+                }
                 double weight = std::stod(tokens[3]);
                 new_edges->Set(src, dst, weight);
             } else {

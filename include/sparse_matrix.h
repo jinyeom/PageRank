@@ -12,7 +12,7 @@ public:
     Entry(int i, int j, T v): i_(i), j_(j), v_(v), is_empty_(false) {}
 
     int I() const { return i_; }
-    int J() const { return i_; }
+    int J() const { return j_; }
     T V() const { return v_; }
     bool IsEmpty() const { return is_empty_; }
 
@@ -50,6 +50,18 @@ public:
         }
         // If there's no match, return a new empty entry.
         return new Entry<T>(i, j);
+    }
+
+    // Get all nonempty entries at row.
+    std::vector<Entry<T>*> GetRow(int i) {
+        if (i < 0 || i >= m_) {
+            throw std::out_of_range("invalid row number");
+        }
+        std::vector<Entry<T>*> row;
+        for (int pos = ia_[i]; pos < ia_[i + 1]; ++pos) {
+            row.push_back(a_.at(pos));
+        }
+        return row;
     }
 
     // Set an element at (i, j) with v.
