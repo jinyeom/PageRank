@@ -23,17 +23,15 @@ std::vector<double> PageRank::PullUpdate(double d) {
         throw std::invalid_argument("d must be between 0 and 1");
     }
     int n = graph_->NumNodes();
-    std::vector<double> next(n);
+    std::vector<double> next(n, (1.0 - d) / (double)n);
     for (int i = 0; i < n; ++i) {
         // Outgoing edges of transpose graph are incoming edges of the original graph.
-        double next_pr = (1.0 - d) / (double)n;
         std::vector<Entry<double>*> incoming = graph_t_->OutEdges(i);
         for (std::vector<Entry<double>*>::const_iterator it = incoming.begin(); it < incoming.end(); ++it) {
             int src = (*it)->J(); // source is the destination of the transpose graph
             int out_degree = graph_->OutEdges(src).size();
-            next_pr += d * (graph_->Node(src) / (double)out_degree);
+            next.at(i) += d * (graph_->Node(src) / (double)out_degree);
         }
-        next.at(i) = next_pr;
     }
     graph_->SetNodes(next);
     graph_t_->SetNodes(next);
@@ -46,17 +44,14 @@ std::vector<double> PageRank::PushUpdate(double d) {
         throw std::invalid_argument("d must be between 0 and 1");
     }
     int n = graph_->NumNodes();
-    std::vector<double> next(n);
+    std::vector<double> next(n, (1.0 - d) / (double)n);
     for (int i = 0; i < n; ++i) {
-        // Outgoing edges of transpose graph are incoming edges of the original graph.
-        double next_pr = (1.0 - d) / (double)n;
-        std::vector<Entry<double>*> incoming = graph_t_->OutEdges(i);
-        for (std::vector<Entry<double>*>::const_iterator it = incoming.begin(); it < incoming.end(); ++it) {
-            int src = (*it)->J(); // source is the destination of the transpose graph
-            int out_degree = graph_->OutEdges(src).size();
-            next_pr += d * (graph_->Node(src) / (double)out_degree);
+        std::vector<Entry<double>*> outgoing = graph_->OutEdges(i);
+        int out_degree = outgoing.size();
+        for (std::vector<Entry<double>*>::const_iterator it = outgoing.begin(); it < outgoing.end(); ++it) {
+            int dst = (*it)->J(); // to each destination, push its value.
+            next.at(dst) += d * (graph_->Node(i) / (double)out_degree);
         }
-        next.at(i) = next_pr;
     }
     graph_->SetNodes(next);
     graph_t_->SetNodes(next);
