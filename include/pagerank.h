@@ -10,7 +10,8 @@ public:
     // Initialize the graph from a file.
     void InitGraph(const std::string& filename, const std::string& format);
 
-    std::vector<double>* PageRanks() { graph_->Nodes(); }
+    Graph* GetGraph() const { return graph_; }
+    std::vector<double>* Ranks() { graph_->Nodes(); }
 
     // Update the graph using the pull style algorithm.
     std::vector<double> PullUpdate(double d);

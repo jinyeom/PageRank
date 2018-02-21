@@ -13,6 +13,7 @@
 #include <math.h>
 
 #include "../include/graph.h"
+#include "../include/sparse_matrix.h"
 #include "../include/pagerank.h"
 #include "../include/util.h"
 
@@ -24,6 +25,7 @@ void Usage(char *prog) {
               << " --fmt FORMAT"
               << " --style STYLE"
               << " --df DF (default=0.85)"
+              << " --csr (default=false)"
               << std::endl;
 }
 
@@ -31,7 +33,8 @@ int main(int argc, char **argv) {
     std::string filename;
     std::string filefmt;
     std::string style;
-    double d = 0.85;    // dampening factor (default = 0.85)
+    double d = 0.85;            // dampening factor (default = 0.85)
+    bool export_csr = false;    // True if exporting a CSR format of the graph.
 
     // Parse program arguments.
     for (int i = 1; i < argc; ++i) {
@@ -47,6 +50,8 @@ int main(int argc, char **argv) {
             }
         } else if (strcmp(argv[i], "--df") == 0) {
             d = std::stod(argv[++i]);
+        } else if (strcmp(argv[i], "--csr") == 0) {
+            export_csr = true;
         } else {
             Usage(argv[0]);
             return EXIT_FAILURE;
@@ -70,6 +75,23 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
+    // Export CSR formatted matrix for the graph.
+    if (export_csr) {
+        std::cout << "======== Graph (CSR) ========" << std::endl;
+        Graph* graph = pr->GetGraph();
+        SparseMatrix<double>* edges = graph->Edges();
+
+        std::vector<double> v;
+        std::vector<Entry<double>*> a = edges->A();
+        for (std::vector<Entry<double>*>::iterator it = a.begin(); it < a.end(); ++it) {
+            v.push_back((*it)->V());
+        }
+
+        PrintVector<double>(v);
+        PrintVector<int>(edges->IA());
+        PrintVector<int>(edges->JA());
+    }
+
     // Decide the algorithm style.
     std::vector<double> (PageRank::*update)(double) = NULL;
     if (style.compare("pull") == 0) {
@@ -86,7 +108,7 @@ int main(int argc, char **argv) {
     }
 
     // Clean up the final ranks to sum up to 1.0.
-    std::vector<double>* ranks = pr->PageRanks();
+    std::vector<double>* ranks = pr->Ranks();
     double sum = 0.0;
     for (std::vector<double>::iterator it = (*ranks).begin(); it < (*ranks).end(); ++it) {
         sum += *it;
