@@ -66,6 +66,7 @@ int main(int argc, char **argv) {
     std::cout << "Graph file format: " << filefmt << std::endl;
     std::cout << "PageRank algorithm style: " << style << std::endl;
     std::cout << "Damping factor: " << d << std::endl;
+    std::cout << std::endl;
 
     PageRank* pr = new PageRank();
     try {
@@ -89,6 +90,7 @@ int main(int argc, char **argv) {
         PrintVector<double>(v);
         PrintVector<int>(edges->IA());
         PrintVector<int>(edges->JA());
+        std::cout << std::endl;
 
         std::cout << "======== Transpose Graph (CSR) ========" << std::endl;
         
@@ -103,6 +105,7 @@ int main(int argc, char **argv) {
         PrintVector<double>(vt);
         PrintVector<int>(edgest->IA());
         PrintVector<int>(edgest->JA());
+        std::cout << std::endl;        
     }
 
     // Decide the algorithm style.
