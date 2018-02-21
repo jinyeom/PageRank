@@ -54,10 +54,14 @@ public:
 
     // Set an element at (i, j) with v.
     void Set(int i, int j, T v) {
-        int pos = ia_[i];
-        int col = -1;
-        while (pos < ia_[i + 1]) {
-            col = ja_[pos++];
+        if (i < 0 || i >= m_ || j < 0 || j >= n_) {
+            throw std::out_of_range("invalid coordinates (i, j)");
+        }
+        int pos = ia_[i];   // column index position;
+        int col = -1;       // column index, initially invalid;
+        if (ia_[i + 1] > ia_[i]) {
+            pos = ia_[i + 1] - 1;
+            col = ja_[pos];
         }
         if (col != j) {
             if (a_.empty()) {
@@ -72,7 +76,7 @@ public:
             }
         } else {
             // Set a different value to an existing entry.
-            a_[pos - 1]->SetV(v);
+            a_[pos]->SetV(v);
         }
     }
 
