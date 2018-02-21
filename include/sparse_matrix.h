@@ -2,6 +2,7 @@
 #define SPARSE_MATRIX_H
 
 #include <vector>
+#include "util.h"
 
 // Matrix entry.
 template <typename T>
@@ -54,33 +55,24 @@ public:
     // Set an element at (i, j) with v.
     void Set(int i, int j, T v) {
         int pos = ia_[i];
-        int col = 0;
-        while (pos < ia_[i + 1] && ja_[pos] != j) {
-            col = ja_[pos];
-            pos++;
+        int col = -1;
+        while (pos < ia_[i + 1]) {
+            col = ja_[pos++];
         }
         if (col != j) {
-            // If the argument position is empty, insert a new entry.
-            // Same as in Get(), if the correct column is found, there is
-            // a nonzero entry.            
             if (a_.empty()) {
                 a_.push_back(new Entry<T>(i, j, v));
                 ja_.push_back(j);
             } else {
                 a_.insert(a_.begin() + pos, new Entry<T>(i, j, v));
-                ja_.insert(ja_.begin() + pos, j);
+                ja_.insert(ja_.begin() + pos, j);               
             }
             for (int r = i + 1; r <= m_; ++r) {
                 ia_[r] += 1;
             }
         } else {
-            // There is already a value at (i, j); set a different value.
-            for (int pos = ia_[i]; pos < ia_[i + 1]; ++pos) {
-                if (ja_[pos] == j) {
-                    a_[pos]->SetV(v);
-                    return;
-                }
-            }
+            // Set a different value to an existing entry.
+            a_[pos - 1]->SetV(v);
         }
     }
 

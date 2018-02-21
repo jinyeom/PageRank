@@ -77,7 +77,7 @@ void Graph::ReadFromFile(const std::string &filename, const std::string &format)
                 }
                 int src = std::stoi(tokens[1]) - 1;
                 int dst = std::stoi(tokens[2]) - 1;
-                double weight = std::stod(tokens[3]);                
+                double weight = std::stod(tokens[3]);
                 new_edges->Set(src, dst, weight);
             } else {
                 sprintf(err_buf, "%s:%d: line starts with unknown token", filename.c_str(), i);

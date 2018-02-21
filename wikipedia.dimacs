@@ -1,4 +1,4 @@
-c FILE: example.dimacs
+c FILE: wikipedia.dimacs
 c SOURCE: Jin Yeom (jinyeom@utexas.edu)
 c DESCRIPTION: PageRank demo graph (https://en.wikipedia.org/wiki/PageRank)
 p pagerank 11 17
