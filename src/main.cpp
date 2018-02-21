@@ -86,10 +86,23 @@ int main(int argc, char **argv) {
         for (std::vector<Entry<double>*>::iterator it = a.begin(); it < a.end(); ++it) {
             v.push_back((*it)->V());
         }
-
         PrintVector<double>(v);
         PrintVector<int>(edges->IA());
         PrintVector<int>(edges->JA());
+
+        std::cout << "======== Transpose Graph (CSR) ========" << std::endl;
+        
+        Graph* grapht = pr->GetGraphT();
+        SparseMatrix<double>* edgest = grapht->Edges();
+
+        std::vector<double> vt;
+        std::vector<Entry<double>*> at = edgest->A();
+        for (std::vector<Entry<double>*>::iterator it = at.begin(); it < at.end(); ++it) {
+            vt.push_back((*it)->V());
+        }
+        PrintVector<double>(vt);
+        PrintVector<int>(edgest->IA());
+        PrintVector<int>(edgest->JA());
     }
 
     // Decide the algorithm style.
